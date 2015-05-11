@@ -1,4 +1,4 @@
-rootProject.name = 'clojure-processing-test'
+rootProject.name = 'p5-clojure'
 
 gradle.ext.gitDependencies = [
 	[cloneTo:'../processing', uri:'https://github.com/meta-meta/processing.git', subPath:'/core', checkout:'riftIntegration']
