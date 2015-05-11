@@ -1,0 +1,72 @@
+import org.ajoberstar.grgit.*
+
+buildscript {
+	repositories {
+    	mavenCentral()
+    	maven { url 'http://clojars.org/repo' }
+	}
+
+	dependencies {
+		classpath 'org.ajoberstar:gradle-git:0.12.0'
+		classpath 'clojuresque:clojuresque:1.7.0'
+	}
+}
+
+plugins {
+    id 'java'
+	id 'idea'
+	id 'eclipse'
+}
+
+apply plugin: "clojure"
+
+repositories {
+    mavenCentral()
+    maven { url 'http://clojars.org/repo' }
+}
+
+dependencies {
+    compile project (':../processing/core')
+    compile "org.clojure:clojure:1.6.0"
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+version = '1.0'
+
+idea {
+	project {
+	    languageLevel = '1.8'
+	}
+	module {
+		name = 'clojure-processing-test'
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.2.1'
+}
+
+
+def cloneRepo(repo) {
+	def cloneTo = file(repo.cloneTo)
+
+	if(!cloneTo.exists()) {
+		logger.quiet 'cloning into ' + cloneTo
+		
+		def grgit = Grgit.clone(dir: cloneTo, uri: repo.uri )
+		
+		if(repo.checkout) {
+			logger.quiet 'checking out ' + repo.checkout
+			grgit.checkout(branch: repo.checkout)
+		}
+	} else {
+		logger.quiet 'already cloned ' + cloneTo
+	}
+}
+
+task setup << {
+	gradle.gitDependencies.each() {
+		cloneRepo it
+	}
+}
